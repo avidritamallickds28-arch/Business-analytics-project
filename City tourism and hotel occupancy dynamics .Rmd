@@ -1,9 +1,31 @@
 ---
-title: "City tourism and hotel occupancy dynamics1"
+title: "City tourism and hotel occupancy dynamics"
 author: "Avidrita Mallick"
 date: "`r Sys.Date()`"
 output: html_document
 ---
+
+
+```
+```{r}
+
+```
+data <- read.csv(file.choose())
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
