@@ -1,0 +1,363 @@
+---
+title: "City tourism and hotel occupancy dynamics"
+author: "Avidrita Mallick"
+date: "`r Sys.Date()`"
+output: html_document
+---
+## City Tourism and Hotel Occupancy Dynamics
+
+## 1. Introduction
+
+Tourism plays an important role in the economic development
+of a city. It creates employment opportunities and supports
+the hotel, transport and hospitality industries.
+
+This project studies tourist arrivals and hotel occupancy
+dynamics in Kolkata, Delhi and Jaipur. It uses descriptive
+analytics to understand tourism patterns, seasonal changes,
+hotel occupancy rates and average room prices.
+
+## 2. Problem Statement
+
+Tourist arrivals and hotel occupancy may change from one
+city to another and across different seasons. This project
+examines these changes to understand the relationship
+between tourism demand and hotel performance.
+
+## 3. Objectives
+
+- To compare tourist arrivals across three cities.
+- To analyse domestic and international tourist arrivals.
+- To study seasonal tourism patterns.
+- To compare hotel occupancy rates.
+- To examine average hotel room prices.
+- To identify useful patterns through graphs and statistics.
+
+## 4. Scope of the Study
+
+The study covers Kolkata, Delhi and Jaipur using a small
+sample dataset for selected months of 2025.
+The analysis focuses on tourism arrivals, hotel rooms,
+occupancy rates and average room prices.
+
+## 5. Type of Analytics
+
+This project uses Descriptive Analytics.
+Descriptive analytics summarises historical data using
+tables, statistical measures and visualisations.
+
+##dataset
+
+```{r setup, message=FALSE, warning=FALSE}
+library(readr)
+
+# Import the dataset
+data <- read_csv(
+  "Small_City_Tourism_Hotel_Occupancy_Dataset.csv",
+  show_col_types = FALSE
+)
+
+# Correct city and season names
+data$City <- tools::toTitleCase(
+  tolower(trimws(data$City))
+)
+
+data$Season <- tools::toTitleCase(
+  tolower(trimws(data$Season))
+)
+
+# Display first six records
+head(data)
+```
+## 7. Descriptive Statistical Analysis
+
+```{r descriptive-statistics}
+# Average tourist arrivals
+mean(data$Total_Tourist_Arrivals)
+
+# Median tourist arrivals
+median(data$Total_Tourist_Arrivals)
+
+# Minimum tourist arrivals
+min(data$Total_Tourist_Arrivals)
+
+# Maximum tourist arrivals
+max(data$Total_Tourist_Arrivals)
+
+# Average hotel occupancy rate
+mean(data$Hotel_Occupancy_Rate_Percent)
+
+# Average hotel room price
+mean(data$Average_Hotel_Room_Price_INR)
+```
+## 8. City-wise Tourist Arrival Analysis
+
+Definition: City-wise analysis compares the total number of tourists visiting each city.
+
+
+```{r city-analysis}
+city_arrivals <- aggregate(
+  Total_Tourist_Arrivals ~ City,
+  data = data,
+  FUN = sum
+)
+
+knitr::kable(city_arrivals)
+```
+
+### Graph: City-wise tourist arrivals
+
+```{r city-bar-chart, fig.width=3, fig.height=5}
+barplot(
+  city_arrivals$Total_Tourist_Arrivals,
+  names.arg = city_arrivals$City,
+  col = "skyblue",
+  main = "Total Tourist Arrivals by City",
+  xlab = "City",
+  ylab = "Total Tourist Arrivals",
+  las = 1
+)
+```
+## 9. Seasonal Tourism Analysis
+Definition: Seasonal analysis studies how tourist arrivals change during different seasons.
+
+
+```{r seasonal_analysis}
+season_arrivals <- aggregate(
+  Total_Tourist_Arrivals ~ Season,
+  data = data,
+  FUN = sum
+)
+
+knitr::kable(season_arrivals)
+```
+
+### Graph: Seasonal tourist arrivals
+
+```{r seasonal-chart, fig.width=3, fig.height=7}
+barplot(
+  season_arrivals$Total_Tourist_Arrivals,
+  names.arg = season_arrivals$Season,
+  col = "violet",
+  main = "Tourist Arrivals by Season",
+  xlab = "Season",
+  ylab = "Total Tourist Arrivals",
+  las = 1
+)
+```
+## 10. Hotel Occupancy Analysis
+
+```{r occupancy_analysis}
+# Calculate average occupancy rate for each city
+
+city_occupancy <- aggregate(
+  Hotel_Occupancy_Rate_Percent ~ City,
+  data = data,
+  FUN = mean
+)
+
+# Display the table
+knitr::kable(city_occupancy, digits = 2)
+```
+```{r occupancy-chart, fig.width=3, fig.height=5}
+barplot(
+  city_occupancy$Hotel_Occupancy_Rate_Percent,
+  names.arg = city_occupancy$City,
+  col = "green",
+  main = "Average Hotel Occupancy by City",
+  xlab = "City",
+  ylab = "Occupancy Rate (%)",
+  ylim = c(0, 100)
+)
+```
+## 11. Hotel Room Price Analysis
+
+```{r price-analysis}
+city_prices <- aggregate(
+  Average_Hotel_Room_Price_INR ~ City,
+  data = data,
+  FUN = mean
+)
+
+knitr::kable(city_prices, digits = 2)
+```
+
+### Graph: Average room price by city
+
+```{r price-chart, fig.width=3, fig.height=5}
+barplot(
+  city_prices$Average_Hotel_Room_Price_INR,
+  names.arg = city_prices$City,
+  col = "yellow",
+  main = "Average Hotel Room Price by City",
+  xlab = "City",
+  ylab = "Average Price (INR)"
+)
+```
+## 12. Domestic and International Tourist Analysis
+
+```{r tourist_type}
+tourist_type <- data.frame(
+  Tourist_Type = c("Domestic", "International"),
+  Total = c(
+    sum(data$Domestic_Tourist_Arrivals),
+    sum(data$International_Tourist_Arrivals)
+  )
+)
+
+knitr::kable(tourist_type)
+```
+
+### Graph: Tourist type comparison
+
+```{r tourist-type-chart}
+barplot(
+  tourist_type$Total,
+  names.arg = tourist_type$Tourist_Type,
+  col = c("green", "tomato"),
+  main = "Domestic vs International Tourists",
+  ylab = "Total Tourist Arrivals"
+)
+```
+## 13. Relationship and Correlation Analysis
+
+Definition: Correlation measures the strength and direction of the relationship between two numerical variables.
+- Positive correlation: both variables tend to increase together.
+- Negative correlation: one tends to decrease as the other increases.
+- Correlation near zero: little linear relationship.
+
+
+### Scatter Plot
+
+```{r scatter-plot, fig.width=7, fig.height=5}
+plot(
+  data$Total_Tourist_Arrivals,
+  data$Hotel_Occupancy_Rate_Percent,
+  main = "Tourist Arrivals vs Hotel Occupancy",
+  xlab = "Total Tourist Arrivals",
+  ylab = "Hotel Occupancy Rate (%)",
+  pch = 19,
+  col = "blue"
+)
+
+abline(
+  lm(
+    Hotel_Occupancy_Rate_Percent ~ Total_Tourist_Arrivals,
+    data = data
+  ),
+  col = "pink",
+  lwd = 2
+)
+```
+
+### Correlation
+
+```{r correlation}
+cor(
+  data$Total_Tourist_Arrivals,
+  data$Hotel_Occupancy_Rate_Percent
+)
+```
+## 14. Major Findings
+
+```{r findings}
+highest_city <- city_arrivals[
+  which.max(city_arrivals$Total_Tourist_Arrivals), ]
+
+highest_season <- season_arrivals[
+  which.max(season_arrivals$Total_Tourist_Arrivals), ]
+
+highest_occupancy <- city_occupancy[
+  which.max(city_occupancy$Hotel_Occupancy_Rate_Percent), ]
+
+highest_price <- city_prices[
+  which.max(city_prices$Average_Hotel_Room_Price_INR), ]
+
+cat("City with highest tourist arrivals:",
+    highest_city$City, "\n")
+
+cat("Season with highest tourist arrivals:",
+    highest_season$Season, "\n")
+
+cat("City with highest average occupancy:",
+    highest_occupancy$City, "\n")
+
+cat("City with highest average room price:",
+    highest_price$City, "\n")
+```
+```{r}
+```
+## 15. Recommendations
+
+1. Tourism departments should promote cities during
+   periods of lower tourist arrivals.
+2. Hotels should plan room availability according
+   to seasonal demand.
+3. Hotels should monitor room prices and occupancy
+   patterns to improve their services.
+4. Tourism authorities should encourage both
+   domestic and international tourism.
+
+## 16. Limitations
+
+- The dataset contains only 15 observations.
+- Only three cities are included.
+- Only selected months of 2025 are covered.
+- The dataset is a small educational sample and
+  does not represent official tourism statistics.
+- The results should not be generalised to all cities
+  or all months.
+
+## 17. Conclusion
+
+This project uses descriptive analytics to study
+tourist arrivals and hotel occupancy dynamics in
+Kolkata, Delhi and Jaipur.
+
+Statistical summaries, tables and graphical
+visualisations help compare tourist arrivals,
+seasonal patterns, hotel occupancy rates and
+average room prices.
+
+The analysis provides a basic understanding of
+tourism demand and hotel performance. A larger
+official dataset covering more cities and months
+would support more reliable conclusions.
+
+## 18. References and Data Source Note
+
+Dataset: Small City Tourism and Hotel Occupancy
+Dataset, prepared as a synthetic educational dataset
+for this project.
+
+Software: R and RStudio.
+
+Packages: readr and knitr.
+
+Analysis Type: Descriptive Analytics.
+
+```{r}
+```
+
+
+```{r}
+```
+
+
+```{r}
+```
+
+```{r data-overview, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+
+
+```
+
+```
+
+
+
